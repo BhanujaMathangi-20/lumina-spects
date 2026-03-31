@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina Spectacles - Premium Eyewear</title>
+    <meta name="description" content="Discover premium spectacles and use our virtual try-on technology to find your perfect fit.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <span class="toast-icon">✓</span>
+        <span id="toast-message">Success!</span>
+    </div>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo" onclick="navigateTo('home')">
+                <h1>Lumina</h1>
+            </div>
+            
+            <div class="search-bar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" placeholder="Search spectacles...">
+            </div>
+
+            <div class="nav-actions">
+                <button class="icon-btn" onclick="navigateTo('profile')" id="profileBtn" title="Profile/Login">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </button>
+                <button class="icon-btn cart-btn" onclick="toggleCart()" title="Shopping Cart">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    <span id="cartCount" class="cart-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Content Wrapper for SPA views -->
+    <main id="app-content">
+        <!-- Views will be injected or toggled here via JS -->
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar closed">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button class="close-btn" onclick="toggleCart()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div id="cartItems" class="cart-items">
+            <!-- Cart items dynamically populate here -->
+            <p class="empty-cart-msg">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total</span>
+                <span id="cartTotalAmt">$0.00</span>
+            </div>
+            <button class="btn-primary w-full shadow-hover" onclick="navigateTo('checkout'); toggleCart();">Proceed to Checkout</button>
+        </div>
+    </div>
+    <div id="cartOverlay" class="overlay hidden" onclick="toggleCart()"></div>
+
+    <!-- Templates for different views (hidden initially) -->
+    
+    <!-- HOME VIEW -->
+    <template id="view-home">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">See the World <br> <span class="gradient-text">Beautifully</span>.</h1>
+                <p class="hero-subtitle">Premium eyewear crafted for clarity, comfort, and state-of-the-art styling.</p>
+                <div class="hero-actions">
+                    <button class="btn-primary shadow-hover" onclick="document.getElementById('products-section').scrollIntoView({behavior: 'smooth'})">Shop Collection</button>
+                    <button class="btn-outline glassy-hover" onclick="startVirtualTryOn()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                        Virtual Try-On
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Virtual Try-on WebRTC Area -->
+        <section id="tryon-section" class="tryon-section hidden">
+            <div class="tryon-container blur-card">
+                <h2>Virtual Try-On</h2>
+                <p>Allow camera access to analyze your face shape and get intelligent recommendations.</p>
+                <div class="video-container">
+                    <video id="webcam" autoplay playsinline></video>
+                    <div id="scanning-overlay" class="scanning-overlay hidden">
+                        <div class="scan-line"></div>
+                        <p>Analyzing Face Shape...</p>
+                    </div>
+                </div>
+                <div class="tryon-actions">
+                    <button id="captureBtn" class="btn-primary" onclick="captureFace()">Analyze My Face</button>
+                    <button class="btn-outline" onclick="stopVirtualTryOn()">Close</button>
+                </div>
+            </div>
+            
+            <div id="face-shape-result" class="face-shape-result hidden blur-card" style="margin-top: 1.5rem; padding: 2rem; text-align: center;">
+                <h3>Detected Face Shape: <span id="detected-shape" class="gradient-text">Round</span></h3>
+                <div id="face-confirm-actions" class="tryon-actions mt-4" style="justify-content: center;">
+                    <button class="btn-primary shadow-hover" onclick="confirmFaceShape('Round')">Confirm</button>
+                    <button class="btn-outline glassy-hover" onclick="showFaceShapeOptions()">Change</button>
+                </div>
+                
+                <div id="face-change-options" class="hidden mt-4">
+                    <p style="margin-bottom: 1rem; color: var(--text-light);">Select your actual face shape:</p>
+                    <div class="filter-pills" style="justify-content: center;">
+                        <button class="pill" onclick="confirmFaceShape('Round')">Round</button>
+                        <button class="pill" onclick="confirmFaceShape('Square')">Square</button>
+                        <button class="pill" onclick="confirmFaceShape('Oval')">Oval</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendation Results hidden initially -->
+            <div id="recommendation-results" class="recommendation-results hidden">
+                <h3>Recommended for you</h3>
+                <div class="grid" id="recommendedProductsGrid"></div>
+            </div>
+        </section>
+
+        <section id="products-section" class="products-section">
+            <div class="section-header">
+                <h2>Featured Frames</h2>
+                <div class="filter-pills">
+                    <button class="pill active" onclick="filterCategory('All', this)">All</button>
+                    <button class="pill" onclick="filterCategory('Men', this)">Men</button>
+                    <button class="pill" onclick="filterCategory('Women', this)">Women</button>
+                    <button class="pill" onclick="filterCategory('Computer Glasses', this)">Computer Glasses</button>
+                </div>
+            </div>
+            <div class="grid" id="productGrid">
+                <!-- Javascript will inject product cards here -->
+            </div>
+        </section>
+    </template>
+
+    <!-- LOGIN TEMPLATE -->
+    <template id="view-login">
+        <div class="auth-container">
+            <div class="auth-card blur-card">
+                <h2>Welcome Back</h2>
+                <p>Sign in to access your saved frames and orders.</p>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required placeholder="name@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-primary w-full">Sign In</button>
+                </form>
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="#" onclick="navigateTo('signup')">Create one</a></p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- SIGNUP TEMPLATE -->
+    <template id="view-signup">
+        <div class="auth-container">
+            <div class="auth-card blur-card">
+                <h2>Create Account</h2>
+                <p>Join us to save your favorite frames and track orders.</p>
+                <form id="signupForm" onsubmit="handleSignup(event)">
+                    <div class="input-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" required placeholder="name@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" required placeholder="••••••••">
+                    </div>
+                    <div class="input-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-primary w-full mt-4">Sign Up</button>
+                </form>
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="#" onclick="navigateTo('login')">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- PROFILE TEMPLATE -->
+    <template id="view-profile">
+        <div class="profile-container">
+            <div class="profile-header">
+                <h2>Your Profile</h2>
+                <button class="btn-outline text-danger" onclick="handleLogout()">Log Out</button>
+            </div>
+            <div class="profile-card blur-card">
+                <div class="profile-avatar">
+                    <span id="profileInitials">JD</span>
+                </div>
+                
+                <form id="profileForm" class="profile-form" onsubmit="handleProfileUpdate(event)">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Full Name</label>
+                            <input type="text" id="profName" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Email</label>
+                            <input type="email" id="profEmail" required disabled>
+                        </div>
+                        <div class="input-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="profPhone" placeholder="+1 (555) 000-0000">
+                        </div>
+                        <div class="input-group">
+                            <label>Saved Address</label>
+                            <input type="text" id="profAddress" placeholder="123 Spectacle Ave, NY">
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button type="submit" class="btn-primary shadow-hover">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </template>
+
+    <!-- CHECKOUT TEMPLATE -->
+    <template id="view-checkout">
+        <div class="checkout-container">
+            <h2>Checkout</h2>
+            <div class="checkout-grid">
+                
+                <!-- Left Details Form -->
+                <div class="checkout-form blur-card">
+                    <h3>Delivery Details</h3>
+                    <form id="checkoutForm" onsubmit="handleCheckout(event)">
+                        <div class="input-group">
+                            <label>Full Name</label>
+                            <input type="text" id="checkoutName" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Shipping Address</label>
+                            <textarea id="checkoutAddress" rows="3" required placeholder="Enter full address..."></textarea>
+                        </div>
+
+                        <h3 class="mt-6">Payment Method</h3>
+                        <div class="payment-options">
+                            <label class="payment-card">
+                                <input type="radio" name="paymentMethod" value="online" checked>
+                                <div class="payment-content">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                    <span>Online Payment (Card/UPI)</span>
+                                </div>
+                            </label>
+                            <label class="payment-card">
+                                <input type="radio" name="paymentMethod" value="cod">
+                                <div class="payment-content">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
+                                    <span>Cash on Delivery (COD)</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary w-full mt-6 shadow-hover" id="checkoutBtnText">Place Order</button>
+                    </form>
+                </div>
+
+                <!-- Right Order Summary -->
+                <div class="checkout-summary blur-card">
+                    <h3>Order Summary</h3>
+                    <div id="checkoutItems" class="checkout-items-list">
+                        <!-- JS injected checkout items -->
+                    </div>
+                    <div class="summary-footer">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="checkoutSubtotal">$0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span id="checkoutTotal">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Dynamic Success Message hidden until checkout-->
+            <div id="checkoutSuccess" class="checkout-success hidden blur-card">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <h2>Order Placed Successfully!</h2>
+                <p>Your beautiful spectacles will be on their way soon.</p>
+                <button class="btn-outline" onclick="navigateTo('home')">Return to Home</button>
+            </div>
+        </div>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+</html>
