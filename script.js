@@ -10,17 +10,17 @@ const state = {
 
 /* Mock Product Data */
 const products = [
-    { id: 1, name: "Aero Aviator", price: 129.99, image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=400", category: "Men" },
-    { id: 2, name: "Classic Wayfarer", price: 149.99, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=400", category: "Unisex" },
-    { id: 3, name: "BlueLight Shield", price: 89.99, image: "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&q=80&w=400", category: "Computer Glasses" },
-    { id: 4, name: "Vintage Round", price: 159.99, image: "https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&q=80&w=400", category: "Women" },
-    { id: 5, name: "Titanium Rimless", price: 199.99, image: "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=400", category: "Men" },
-    { id: 6, name: "Cat Eye Onyx", price: 139.99, image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=400", category: "Women" },
-    { id: 7, name: "Bold Square", price: 119.99, image: "https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&q=80&w=400", category: "Men" },
-    { id: 8, name: "Sleek Rectangular", price: 109.99, image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=400", category: "Unisex" },
-    { id: 9, name: "Classic Oval", price: 99.99, image: "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&q=80&w=400", category: "Women" },
-    { id: 10, name: "Modern Geometric", price: 139.99, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=400", category: "Unisex" },
-    { id: 11, name: "Urban Semi-rimless", price: 129.99, image: "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=400", category: "Men" },
+    { id: 1, name: "Aero Aviator", price: 10919, image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=400", category: "Men" },
+    { id: 2, name: "Classic Wayfarer", price: 12599, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=400", category: "Unisex" },
+    { id: 3, name: "BlueLight Shield", price: 7559, image: "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&q=80&w=400", category: "Computer Glasses" },
+    { id: 4, name: "Vintage Round", price: 13439, image: "https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&q=80&w=400", category: "Women" },
+    { id: 5, name: "Titanium Rimless", price: 16799, image: "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=400", category: "Men" },
+    { id: 6, name: "Cat Eye Onyx", price: 11759, image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=400", category: "Women" },
+    { id: 7, name: "Bold Square", price: 10079, image: "https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&q=80&w=400", category: "Men" },
+    { id: 8, name: "Sleek Rectangular", price: 9239, image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=400", category: "Unisex" },
+    { id: 9, name: "Classic Oval", price: 8399, image: "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&q=80&w=400", category: "Women" },
+    { id: 10, name: "Modern Geometric", price: 11759, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=400", category: "Unisex" },
+    { id: 11, name: "Urban Semi-rimless", price: 10919, image: "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=400", category: "Men" },
 ];
 
 /* --- SPA Navigation & Rendering --- */
@@ -113,7 +113,7 @@ function renderCart() {
     
     if (state.cart.length === 0) {
         cartItemsEl.innerHTML = '<p class="empty-cart-msg">Your cart is empty.</p>';
-        totalEl.textContent = '$0.00';
+        totalEl.textContent = '₹0';
         return;
     }
     
@@ -129,7 +129,7 @@ function renderCart() {
                 </div>
                 <div class="cart-item-details">
                     <div class="cart-item-title">${item.name}</div>
-                    <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                    <div class="cart-item-price">₹${item.price}</div>
                 </div>
                 <button class="remove-item" onclick="removeFromCart(${index})" title="Remove">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -139,7 +139,7 @@ function renderCart() {
     });
     
     cartItemsEl.innerHTML = html;
-    totalEl.textContent = `$${total.toFixed(2)}`;
+    totalEl.textContent = `₹${total}`;
 }
 
 /* --- Checkout Logic --- */
@@ -151,8 +151,8 @@ function renderCheckout() {
     
     if (state.cart.length === 0) {
         checkoutItemsEl.innerHTML = '<p class="empty-cart-msg">Your cart is empty.</p>';
-        subtotalEl.textContent = '$0.00';
-        totalEl.textContent = '$0.00';
+        subtotalEl.textContent = '₹0';
+        totalEl.textContent = '₹0';
         return;
     }
     
@@ -169,14 +169,14 @@ function renderCheckout() {
         html += `
             <div class="summary-row">
                 <span>${item.name}</span>
-                <span>$${item.price.toFixed(2)}</span>
+                <span>₹${item.price}</span>
             </div>
         `;
     });
     
     checkoutItemsEl.innerHTML = html;
-    subtotalEl.textContent = `$${total.toFixed(2)}`;
-    totalEl.textContent = `$${total.toFixed(2)}`;
+    subtotalEl.textContent = `₹${total}`;
+    totalEl.textContent = `₹${total}`;
     
     document.getElementById('checkoutSuccess').classList.add('hidden');
     checkoutForm.style.display = 'block';
@@ -470,7 +470,7 @@ function generateProductHTML(product) {
             <div class="product-info">
                 <div>
                     <h3 class="product-name">${product.name}</h3>
-                    <p class="product-price">$${product.price.toFixed(2)}</p>
+                    <p class="product-price">₹${product.price}</p>
                 </div>
                 <button class="add-to-cart-btn" onclick="addToCart(${product.id})" title="Add to Cart">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>
