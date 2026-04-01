@@ -25,8 +25,11 @@ const products = [
 
 /* --- SPA Navigation & Rendering --- */
 function navigateTo(page) {
-    if ((page === 'profile' || page === 'checkout') && !state.currentUser) {
-        showToast("Please login to continue");
+    if (page === 'checkout' && !state.currentUser) {
+        showToast("Please login to place your order");
+        state.pendingRedirect = page;
+        page = 'login';
+    } else if (page === 'profile' && !state.currentUser) {
         state.pendingRedirect = page;
         page = 'login';
     }
@@ -70,13 +73,6 @@ function toggleCart() {
 }
 
 function addToCart(productId) {
-    if (!state.currentUser) {
-        showToast("Please login to continue");
-        state.pendingAction = () => addToCart(productId);
-        navigateTo('login');
-        return;
-    }
-
     const product = products.find(p => p.id === productId);
     if (!product) return;
     
@@ -230,10 +226,15 @@ function handleLogin(e) {
     
     showToast("Logged in successfully!");
     
-    // Clear pending actions and redirect to home
+    // Clear pending actions and redirect to pending page if exists
     state.pendingAction = null;
-    state.pendingRedirect = null;
-    navigateTo('home');
+    if (state.pendingRedirect) {
+        const redirect = state.pendingRedirect;
+        state.pendingRedirect = null;
+        navigateTo(redirect);
+    } else {
+        navigateTo('home');
+    }
 }
 
 function handleSignup(e) {
@@ -275,8 +276,13 @@ function handleSignup(e) {
     showToast("Account created successfully!");
     
     state.pendingAction = null;
-    state.pendingRedirect = null;
-    navigateTo('home');
+    if (state.pendingRedirect) {
+        const redirect = state.pendingRedirect;
+        state.pendingRedirect = null;
+        navigateTo(redirect);
+    } else {
+        navigateTo('home');
+    }
 }
 
 function handleLogout() {
@@ -325,13 +331,6 @@ function handleProfileUpdate(e) {
 
 /* --- WebRTC Camera Try-On Feature --- */
 async function startVirtualTryOn() {
-    if (!state.currentUser) {
-        showToast("Please login to continue");
-        state.pendingAction = () => startVirtualTryOn();
-        navigateTo('login');
-        return;
-    }
-
     const section = document.getElementById('tryon-section');
     section.classList.remove('hidden');
     section.scrollIntoView({behavior: 'smooth'});
